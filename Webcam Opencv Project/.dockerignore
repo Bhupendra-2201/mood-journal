@@ -1,0 +1,15 @@
+.git
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+.db
+.venv
+venv
+env
+.env
+.vscode
+.idea
+Dockerfile
+Dockerfile.serving
+Webcam-deployment.yaml

@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mood-journal-nlp-deployment
+  labels:
+    app: mood-journal-nlp-app # ZONE A: Metadata for the Deployment itself
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mood-journal-nlp-app # ZONE B: Tells the Deployment which Pods to manage
+  template:
+    metadata:
+      labels:
+        app: mood-journal-nlp-app # ZONE C: Label applied to the Pods being created
+    spec:
+      containers:
+        - name: mood-journal-nlp-app
+          image: nlp-text-emotion:latest
+          ports:
+            - containerPort: 8501
+
+--- # <--- CRITICAL: Separation between Deployment and Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: mood-journal-nlp-service
+spec:
+  selector:
+    app: mood-journal-nlp-app
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8501
+  type: LoadBalancer

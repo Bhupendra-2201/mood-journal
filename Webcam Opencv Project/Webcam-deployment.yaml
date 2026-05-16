@@ -1,0 +1,52 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mood-journal-webcam-app-deployment
+  labels:
+    app: mood-journal-webcam-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mood-journal-webcam-app
+  template:
+    metadata:
+      labels:
+        app: mood-journal-webcam-app
+    spec:
+      containers:
+        - name: mood-journal-webcam-app
+          image: asia-south1-docker.pkg.dev/project-23393c29-3172-4123-ac8/mood-journal/webcam-app:latest
+          volumeMounts:
+            - name: mood-journal-data
+              mountPath: /data
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8501
+          env:
+            - name: TF_SERVING_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: mood-journal-config
+                  key: tf_serving_url
+      volumes:
+        - name: mood-journal-data
+          configMap:
+            name: mood-journal-config
+
+--- # <--- Separation between Deployment and Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: mood-journal-webcam-app-service
+  annotations:
+    cloud.google.com/neg: '{"ingress": true}'
+spec:
+  selector:
+    app: mood-journal-webcam-app
+  ports:
+    - protocol: TCP
+      port: 3000
+      targetPort: 8501
+      nodePort: 30002
+  type: NodePort

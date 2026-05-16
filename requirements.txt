@@ -1,4 +1,6 @@
 SpeechRecognition==3.8.1
-tk==0.1.0
+# Note: Tkinter is part of the Python standard library (stdlib).
+# On Windows it ships with Python. On Ubuntu: sudo apt-get install python3-tk
+# Do NOT install the dummy 'tk' package from PyPI.
 textblob==0.15.3
 matplotlib==3.4.2

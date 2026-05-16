@@ -1,0 +1,4 @@
+FROM tensorflow/serving:2.6.0
+# Copy the exported model into the serving container
+COPY saved_model /models/emotion_model
+ENV MODEL_NAME=emotion_model

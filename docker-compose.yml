@@ -1,0 +1,33 @@
+version: '3.8'
+
+services:
+  tf-serving-service:
+    build:
+      context: ./Webcam Opencv Project
+      dockerfile: Dockerfile.serving
+    ports:
+      - "8503:8501" # Host port 8503 -> Container port 8501
+    container_name: tf-serving
+
+  webcam-app:
+    build:
+      context: ./Webcam Opencv Project
+      dockerfile: Dockerfile
+    ports:
+      - "8501:8501" # Streamlit runs on 8501
+    environment:
+      - TF_SERVING_URL=http://tf-serving-service:8501/v1/models/emotion_model:predict
+    volumes:
+      # Mount a local directory to persist the mood log locally
+      - ./local_data:/app/data
+    depends_on:
+      - tf-serving-service
+    container_name: webcam-frontend
+
+  nlp-app:
+    build:
+      context: ./NLP-Text-Emotion
+      dockerfile: Dockerfile
+    ports:
+      - "8502:8501" # Map to 8502 so it doesn't conflict with webcam app
+    container_name: nlp-frontend

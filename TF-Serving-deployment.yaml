@@ -1,0 +1,52 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tf-serving-deployment
+  labels:
+    app: tf-serving
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: tf-serving
+  template:
+    metadata:
+      labels:
+        app: tf-serving
+    spec:
+      nodeSelector:
+        cloud.google.com/gke-spot: "true"
+      tolerations:
+      - key: "cloud.google.com/gke-spot"
+        operator: "Equal"
+        value: "true"
+        effect: "NoSchedule"
+      containers:
+        - name: tf-serving
+          image: asia-south1-docker.pkg.dev/project-23393c29-3172-4123-ac8/mood-journal/tf-serving:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8501
+          resources:
+            requests:
+              cpu: "200m"
+              memory: "256Mi"
+            limits:
+              cpu: "1"
+              memory: "1Gi"
+
+---
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: tf-serving-service
+spec:
+  type: NodePort # <--- Mandatory for nodePort to work
+  selector:
+    app: tf-serving
+  ports:
+    - port: 8501
+      targetPort: 8501
+      nodePort: 30001 # <--- Use lowercase 'n'
+
