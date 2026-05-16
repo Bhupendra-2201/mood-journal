@@ -29,6 +29,12 @@ spec:
                 configMapKeyRef:
                   name: mood-journal-config
                   key: tf_serving_url
+            - name: STREAMLIT_SERVER_ENABLE_CORS
+              value: "false"
+            - name: STREAMLIT_SERVER_ENABLE_XSRF_PROTECTION
+              value: "false"
+            - name: STREAMLIT_SERVER_HEADLESS
+              value: "true"
       volumes:
         - name: mood-journal-data
           configMap:
@@ -41,6 +47,7 @@ metadata:
   name: mood-journal-webcam-app-service
   annotations:
     cloud.google.com/neg: '{"ingress": true}'
+    cloud.google.com/backend-config: '{"default": "mood-journal-backend-config"}'
 spec:
   selector:
     app: mood-journal-webcam-app
